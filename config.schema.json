@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "HomebridgePluginIOT",
   "pluginType": "platform",
   "singular": true,
   "schema": {
@@ -10,6 +10,12 @@
         "type": "string",
         "required": true,
         "default": "Example Dynamic Platform"
+      },
+      "url": {
+        "title": "titlu url",
+        "type": "string",
+        "required": true,
+        "default": "http://192.168.10.161/REL1"
       }
     }
   }

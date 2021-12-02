@@ -1,19 +1,19 @@
 {
   "private": true,
-  "displayName": "Plugin Name",
-  "name": "homebridge-plugin-name",
+  "displayName": "IOT home platform",
+  "name": "homebridge-plugin-iot",
   "version": "1.0.0",
-  "description": "A short description about what your plugin does.",
+  "description": "Integration of IOT devices.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "https://github.com/leexeel/HB1.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/leexeel/HB1/issues"
   },
   "engines": {
-    "node": ">=14.18.1",
+    "node": ">=12.0.0",
     "homebridge": ">=1.3.5"
   },
   "main": "dist/index.js",
@@ -21,6 +21,7 @@
     "lint": "eslint src/**.ts --max-warnings=0",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
+    "rimraf": "./node_modules/rimraf/bin.js",
     "prepublishOnly": "npm run lint && npm run build"
   },
   "keywords": [
