@@ -57,7 +57,11 @@ export class HomebridgePlatformIOT implements DynamicPlatformPlugin {
     const exampleDevices = [
       {
         exampleUniqueId: 'L101',
-        exampleDisplayName: 'Christmas Lights',
+        exampleDisplayName: 'Christmas Lights 1',
+      },
+      {
+        exampleUniqueId: 'L102',
+        exampleDisplayName: 'Christmas Lights 2',
       },
     ];
 

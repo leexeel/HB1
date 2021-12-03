@@ -15,7 +15,7 @@ export class ExamplePlatformAccessory {
    * You should implement your own code to track the state of your accessory
    */
   private exampleStates = {
-    On: false,
+    On: true,
     Brightness: 100,
   };
 
@@ -26,9 +26,9 @@ export class ExamplePlatformAccessory {
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Default-Manufacturer')
-      .setCharacteristic(this.platform.Characteristic.Model, 'Default-Model')
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, 'Default-Serial');
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'leeXeel INC')
+      .setCharacteristic(this.platform.Characteristic.Model, 'nodeMCU')
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, '001');
 
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
@@ -62,11 +62,11 @@ export class ExamplePlatformAccessory {
      */
 
     // Example: add two "motion sensor" services to the accessory
-    const motionSensorOneService = this.accessory.getService('Motion Sensor One Name') ||
-      this.accessory.addService(this.platform.Service.MotionSensor, 'Motion Sensor One Name', 'YourUniqueIdentifier-1');
+    // const motionSensorOneService = this.accessory.getService('Motion Sensor One Name') ||
+    //   this.accessory.addService(this.platform.Service.MotionSensor, 'Motion Sensor One Name', 'YourUniqueIdentifier-1');
 
-    const motionSensorTwoService = this.accessory.getService('Motion Sensor Two Name') ||
-      this.accessory.addService(this.platform.Service.MotionSensor, 'Motion Sensor Two Name', 'YourUniqueIdentifier-2');
+    // const motionSensorTwoService = this.accessory.getService('Motion Sensor Two Name') ||
+    //   this.accessory.addService(this.platform.Service.MotionSensor, 'Motion Sensor Two Name', 'YourUniqueIdentifier-2');
 
     /**
      * Updating characteristics values asynchronously.
@@ -77,19 +77,19 @@ export class ExamplePlatformAccessory {
      * the `updateCharacteristic` method.
      *
      */
-    let motionDetected = false;
-    setInterval(() => {
-      // EXAMPLE - inverse the trigger
-      motionDetected = !motionDetected;
+  //   let motionDetected = false;
+  //   setInterval(() => {
+  //     // EXAMPLE - inverse the trigger
+  //     motionDetected = !motionDetected;
 
-      // push the new value to HomeKit
-      motionSensorOneService.updateCharacteristic(this.platform.Characteristic.MotionDetected, motionDetected);
-      motionSensorTwoService.updateCharacteristic(this.platform.Characteristic.MotionDetected, !motionDetected);
+  //     // push the new value to HomeKit
+  //     motionSensorOneService.updateCharacteristic(this.platform.Characteristic.MotionDetected, motionDetected);
+  //     motionSensorTwoService.updateCharacteristic(this.platform.Characteristic.MotionDetected, !motionDetected);
 
-      this.platform.log.debug('Triggering motionSensorOneService:', motionDetected);
-      this.platform.log.debug('Triggering motionSensorTwoService:', !motionDetected);
-    }, 10000);
-  }
+  //     this.platform.log.debug('Triggering motionSensorOneService:', motionDetected);
+  //     this.platform.log.debug('Triggering motionSensorTwoService:', !motionDetected);
+  //   }, 10000);
+ }
 
   /**
    * Handle "SET" requests from HomeKit
@@ -98,6 +98,14 @@ export class ExamplePlatformAccessory {
   async setOn(value: CharacteristicValue) {
     // implement your own code to turn your device on/off
     this.exampleStates.On = value as boolean;
+
+    const rp = require('request-promise');
+    const url = 'http://192.168.10.161/REL1';
+    rp(url)
+    .then()
+    .catch(function(err){
+    //handle error
+    });
 
     this.platform.log.debug('Set Characteristic On ->', value);
   }
@@ -117,13 +125,52 @@ export class ExamplePlatformAccessory {
    */
   async getOn(): Promise<CharacteristicValue> {
     // implement your own code to check if the device is on
-    const isOn = this.exampleStates.On;
-
-    this.platform.log.debug('Get Characteristic On ->', isOn);
+    //const isOn = this.exampleStates.On;
+    //const isOff = this.exampleStates.Off;
+    const rp = require('request-promise');
+    const url = 'http://192.168.10.161/getStatus';
+    const relay1 = "";
+    const relay2 = "";
+    
+    rp(url)
+    .then(function(html){
+      //console.log("raspuns lung:======================================================================================================================================");
+      //console.log("raspuns pagina:"+html+"|");
+      const ls1 = html.split("<p>");
+      const ls2 = ls1[0].split(":");
+      const ls3 = ls1[1].split(":");
+      const ls4 = ls3[1].split("</body>")
+      console.log("raspuns lung:======================================================================================================================================");
+      console.log("prima parte:"+ls2[1]);
+      console.log("a doua parte:"+ls4[0]);
+      if( ls4[0].equals("0") ){
+        console.log("ls4[0] este 0");
+      }
+      else {
+        console.log("ls4[0] nu este 0");
+      }
+      console.log("ar fi trebuit sa afiseze ceva");
+    })
+    .catch(function(err){
+    //handle error
+    });
+    //this.exampleStates.On = true;
+    // if( relay1. ){
+    //   this.exampleStates.On = true;
+    //   //this.updateCharacteristic(this.platform.Characteristic.On, true);
+    //   //this.platform.log.debug('Get Characteristic On ->', isOn);
+    //   console.log("cica e on "+relay1);
+    // }
+    // else{
+    //   this.exampleStates.On = false;
+    //   //this.service.updateCharacteristic(this.platform.Characteristic.On, false);
+    //   //this.platform.log.debug('Get Characteristic On ->', isOn);
+    //   console.log("cica e off "+relay1);
+    // }
 
     // if you need to return an error to show the device as "Not Responding" in the Home app:
     // throw new this.platform.api.hap.HapStatusError(this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE);
-
+    const isOn = this.exampleStates.On;
     return isOn;
   }
 
@@ -138,4 +185,6 @@ export class ExamplePlatformAccessory {
     this.platform.log.debug('Set Characteristic Brightness -> ', value);
   }
 
+  getStatus(){
+  }
 }
