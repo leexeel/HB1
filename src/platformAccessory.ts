@@ -125,48 +125,48 @@ export class ExamplePlatformAccessory {
    */
   async getOn(): Promise<CharacteristicValue> {
     // implement your own code to check if the device is on
-    //const isOn = this.exampleStates.On;
-    //const isOff = this.exampleStates.Off;
-    const rp = require('request-promise');
-    const url = 'http://192.168.10.161/getStatus';
-    const relay1 = "";
-    const relay2 = "";
-    
-    rp(url)
-    .then(function(html){
-      //console.log("raspuns lung:======================================================================================================================================");
-      //console.log("raspuns pagina:"+html+"|");
-      const ls1 = html.split("<p>");
-      const ls2 = ls1[0].split(":");
-      const ls3 = ls1[1].split(":");
-      const ls4 = ls3[1].split("</body>")
-      console.log("raspuns lung:======================================================================================================================================");
-      console.log("prima parte:"+ls2[1]);
-      console.log("a doua parte:"+ls4[0]);
-      if( ls4[0].equals("0") ){
-        console.log("ls4[0] este 0");
-      }
-      else {
-        console.log("ls4[0] nu este 0");
-      }
-      console.log("ar fi trebuit sa afiseze ceva");
-    })
-    .catch(function(err){
-    //handle error
-    });
+    var relay1 = "";
+    console.log("raspuns lung:======================================================================================================================================");
+
+
+    // var EventEmitter = require("events").EventEmitter;
+    // var body = new EventEmitter();
+
+    // var http = require('http');
+    // var options = {
+    //     host: "192.168.10.161", //Both variables defined earlier in the code this is just a snippet of the http.request part
+    //     path: "/getStatus"
+    // };
+    // const callback = function(response) {
+    //   var string = '';
+    //   response.on('data', function (blob) {
+    //     string += blob;
+    //   });
+    //   response.on('end', function () {
+    //     body.data = string;
+    //     body.emit('update');
+    //     //console.log(string);
+    //   });
+    // }
+    // http.request(options, callback).end();
+
+    // body.on('update', function () {
+    //   console.log("Date in afara obiectului:"+body.data); // HOORAY! THIS WORKS!
+    //   relay1 = body.data;
+    // });
+    relay1 = await this.getStatus();
+    console.log("ar fi trebuit sa afiseze ceva 2:"+relay1);
     //this.exampleStates.On = true;
-    // if( relay1. ){
-    //   this.exampleStates.On = true;
-    //   //this.updateCharacteristic(this.platform.Characteristic.On, true);
-    //   //this.platform.log.debug('Get Characteristic On ->', isOn);
-    //   console.log("cica e on "+relay1);
-    // }
-    // else{
-    //   this.exampleStates.On = false;
-    //   //this.service.updateCharacteristic(this.platform.Characteristic.On, false);
-    //   //this.platform.log.debug('Get Characteristic On ->', isOn);
-    //   console.log("cica e off "+relay1);
-    // }
+    if( (await relay1).endsWith("0")) {
+      this.exampleStates.On = true;
+      //this.platform.log.debug('Get Characteristic On ->', isOn);
+      console.log("cica e on "+relay1);
+    }
+    else{
+      this.exampleStates.On = false;
+      //this.platform.log.debug('Get Characteristic On ->', isOn);
+      console.log("cica e off "+relay1);
+    }
 
     // if you need to return an error to show the device as "Not Responding" in the Home app:
     // throw new this.platform.api.hap.HapStatusError(this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE);
@@ -185,6 +185,22 @@ export class ExamplePlatformAccessory {
     this.platform.log.debug('Set Characteristic Brightness -> ', value);
   }
 
-  getStatus(){
+  async getStatus(){
+    const axios = require('axios')
+    let raspuns = "";
+    try {
+      const { data } = await axios.get('http://192.168.10.161/getStatus');
+      raspuns = data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        //handleAxiosError(error);
+      } else {
+        //handleUnexpectedError(error);
+      }
+    }
+    const ls1 = raspuns.split("<p>");
+    const ls2 = ls1[0].split(":");
+    const relay1 = ls2[1];
+    return Promise.resolve(relay1);
   }
 }
